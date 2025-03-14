@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovelNest - Your Personal Reading Sanctuary</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* Custom styles */
+    :root {
+      --background: 255, 255, 255;
+      --foreground: 10, 10, 10;
+      --card: 255, 255, 255;
+      --card-foreground: 10, 10, 10;
+      --popover: 255, 255, 255;
+      --popover-foreground: 10, 10, 10;
+      --primary: 79, 70, 229;
+      --primary-foreground: 255, 255, 255;
+      --secondary: 244, 244, 245;
+      --secondary-foreground: 39, 39, 42;
+      --muted: 244, 244, 245;
+      --muted-foreground: 113, 113, 122;
+      --accent: 244, 244, 245;
+      --accent-foreground: 39, 39, 42;
+      --destructive: 239, 68, 68;
+      --destructive-foreground: 255, 255, 255;
+      --border: 228, 228, 231;
+      --input: 228, 228, 231;
+      --ring: 79, 70, 229;
+      --radius: 0.5rem;
+    }
+
+    .dark {
+      --background: 24, 24, 27;
+      --foreground: 250, 250, 250;
+      --card: 39, 39, 42;
+      --card-foreground: 250, 250, 250;
+      --popover: 39, 39, 42;
+      --popover-foreground: 250, 250, 250;
+      --primary: 124, 58, 237;
+      --primary-foreground: 255, 255, 255;
+      --secondary: 39, 39, 42;
+      --secondary-foreground: 250, 250, 250;
+      --muted: 39, 39, 42;
+      --muted-foreground: 161, 161, 170;
+      --accent: 39, 39, 42;
+      --accent-foreground: 250, 250, 250;
+      --destructive: 248, 113, 113;
+      --destructive-foreground: 250, 250, 250;
+      --border: 63, 63, 70;
+      --input: 63, 63, 70;
+      --ring: 124, 58, 237;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: rgb(var(--background));
+      color: rgb(var(--foreground));
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .bg-background {
+      background-color: rgb(var(--background));
+    }
+
+    .bg-primary {
+      background-color: rgb(var(--primary));
+    }
+
+    .bg-muted {
+      background-color: rgb(var(--muted));
+    }
+
+    .text-primary {
+      color: rgb(var(--primary));
+    }
+
+    .text-muted-foreground {
+      color: rgb(var(--muted-foreground));
+    }
+
+    .text-primary-foreground {
+      color: rgb(var(--primary-foreground));
+    }
+
+    .border-color {
+      border-color: rgb(var(--border));
+    }
+
+    .card {
+      background-color: rgb(var(--card));
+      color: rgb(var(--card-foreground));
+      border: 1px solid rgb(var(--border));
+      border-radius: var(--radius);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .btn-primary {
+      background-color: rgb(var(--primary));
+      color: rgb(var(--primary-foreground));
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      transition: opacity 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      color: rgb(var(--foreground));
+      border: 1px solid rgb(var(--border));
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      background-color: rgb(var(--muted));
+    }
+
+    .btn-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      padding: 0.5rem;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn-icon:hover {
+      background-color: rgb(var(--muted));
+    }
+
+    .novel-card {
+      transition: transform 0.2s ease;
+    }
+
+    .novel-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .tab {
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      border-radius: var(--radius);
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background-color: rgb(var(--primary));
+      color: rgb(var(--primary-foreground));
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Dark mode icon transitions */
+    .dark-icon {
+      display: none;
+    }
+
+    .light-icon {
+      display: inline-block;
+    }
+
+    .dark .dark-icon {
+      display: inline-block;
+    }
+
+    .dark .light-icon {
+      display: none;
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      height: 0.375rem;
+      background-color: rgb(var(--muted));
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .progress-value {
+      height: 100%;
+      background-color: rgb(var(--primary));
+    }
+
+    /* Backdrop blur for header */
+    .backdrop-blur {
+      backdrop-filter: blur(8px);
+    }
+
+    /* Gradient backgrounds */
+    .bg-gradient {
+      background: linear-gradient(to bottom right, rgba(var(--primary), 0.2), rgba(var(--primary), 0.1));
+    }
+
+    /* Responsive utilities */
+    @media (max-width: 768px) {
+      .md\:hidden {
+        display: none;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .md\:block {
+        display: block;
+      }
+      .md\:flex {
+        display: flex;
+      }
+      .md\:hidden {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="flex min-h-screen flex-col">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 w-full border-b border-color bg-background backdrop-blur">
+      <div class="container mx-auto px-4 flex h-16 items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i class="fas fa-book-open text-xl"></i>
+          <a href="#" class="text-xl font-bold">NovelNest</a>
+        </div>
+        <div class="hidden md:flex md:flex-1 md:items-center md:justify-center">
+          <div class="relative w-full max-w-md">
+            <i class="fas fa-search absolute left-3 top-3 text-muted-foreground text-sm"></i>
+            <input
+              type="search"
+              placeholder="Search for novels..."
+              class="w-full bg-background pl-10 pr-4 py-2 rounded-md border border-color"
+            />
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <nav class="hidden md:flex items-center gap-6">
+            <a href="#" class="text-sm font-medium text-muted-foreground hover:text-primary">Discover</a>
+            <a href="#" class="text-sm font-medium text-muted-foreground hover:text-primary">Library</a>
+            <a href="#" class="text-sm font-medium text-muted-foreground hover:text-primary">Profile</a>
+          </nav>
+          <button id="theme-toggle" class="btn-icon" aria-label="Toggle theme">
+            <i class="fas fa-sun light-icon"></i>
+            <i class="fas fa-moon dark-icon"></i>
+          </button>
+          <button class="btn-primary hidden md:block">Sign In</button>
+          <button class="btn-icon md:hidden">
+            <i class="fas fa-search"></i>
+          </button>
+          <button class="btn-icon md:hidden">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+      <!-- Hero Section -->
+      <section class="w-full py-12 md:py-24 lg:py-32 bg-muted">
+        <div class="container mx-auto px-4 md:px-6">
+          <div class="grid gap-6 lg:grid-cols-2 lg:gap-12">
+            <div class="flex flex-col justify-center space-y-4">
+              <div class="space-y-2">
+                <h1 class="text-3xl font-bold tracking-tighter sm:text-5xl">
+                  Your Personal Reading Sanctuary
+                </h1>
+                <p class="max-w-[600px] text-muted-foreground md:text-xl">
+                  Discover, bookmark, and immerse yourself in thousands of novels. Join our community of readers today.
+                </p>
+              </div>
+              <div class="flex flex-col gap-2 min-[400px]:flex-row">
+                <button class="btn-primary">Get Started</button>
+                <button class="btn-outline">Browse Library</button>
+              </div>
+            </div>
+            <div class="hidden lg:block">
+              <div class="relative h-[450px] w-[350px] rotate-3 rounded-2xl bg-gradient p-4 shadow-xl">
+                <div class="absolute inset-4 rounded-lg bg-background shadow-lg">
+                  <div class="p-6 space-y-4">
+                    <div class="h-6 w-2/3 rounded-md bg-primary opacity-20"></div>
+                    <div class="space-y-2">
+                      <div class="h-4 w-full rounded-md bg-muted"></div>
+                      <div class="h-4 w-full rounded-md bg-muted"></div>
+                      <div class="h-4 w-full rounded-md bg-muted"></div>
+                      <div class="h-4 w-full rounded-md bg-muted"></div>
+                      <div class="h-4 w-2/3 rounded-md bg-muted"></div>
+                    </div>
+                    <div class="space-y-2">
+                      <div class="h-4 w-full rounded-md bg-muted"></div>
+                      <div class="h-4 w-full rounded-md bg-muted"></div>
+                      <div class="h-4 w-full rounded-md bg-muted"></div>
+                      <div class="h-4 w-full rounded-md bg-muted"></div>
+                      <div class="h-4 w-1/2 rounded-md bg-muted"></div>
+                    </div>
+                    <div class="flex justify-end">
+                      <div class="h-8 w-8 rounded-full bg-primary opacity-20"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Trending Section -->
+      <section class="w-full py-12 md:py-24 lg:py-32">
+        <div class="container mx-auto px-4 md:px-6">
+          <div class="flex flex-col items-center justify-center space-y-4 text-center">
+            <div class="space-y-2">
+              <div class="inline-block rounded-lg bg-primary px-3 py-1 text-sm text-primary-foreground">
+                Trending Now
+              </div>
+              <h2 class="text-3xl font-bold tracking-tighter md:text-4xl">Popular This Week</h2>
+              <p class="max-w-[900px] text-muted-foreground md:text-xl">
+                Discover what other readers are enjoying right now
+              </p>
+            </div>
+          </div>
+          <div class="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 sm:grid-cols-2 md:grid-cols-3 lg:gap-12">
+            <!-- Novel Card 1 -->
+            <a href="#" class="novel-card group relative overflow-hidden rounded-lg shadow-lg">
+              <div class="aspect-[2/3] w-full bg-muted">
+                <div class="flex h-full items-center justify-center bg-gradient">
+                  <i class="fas fa-book-open text-4xl text-primary opacity-40"></i>
+                </div>
+              </div>
+              <div class="absolute bottom-0 w-full bg-background bg-opacity-90 p-4">
+                <h3 class="font-semibold text-lg">The Midnight Chronicles</h3>
+                <p class="text-sm text-muted-foreground">By J.K. Rowling</p>
+                <div class="mt-2 flex items-center text-sm">
+                  <div class="flex items-center">
+                    <i class="fas fa-chart-line mr-1 text-primary"></i>
+                    <span>4.8</span>
+                  </div>
+                  <div class="ml-4 flex items-center">
+                    <i class="fas fa-bookmark mr-1 text-primary"></i>
+                    <span>2.3k</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+            
+            <!-- Novel Card 2 -->
+            <a href="#" class="novel-card group relative overflow-hidden rounded-lg shadow-lg">
+              <div class="aspect-[2/3] w-full bg-muted">
+                <div class="flex h-full items-center justify-center bg-gradient">
+                  <i class="fas fa-book-open text-4xl text-primary opacity-40"></i>
+                </div>
+              </div>
+              <div class="absolute bottom-0 w-full bg-background bg-opacity-90 p-4">
+                <h3 class="font-semibold text-lg">The Shadow Keeper</h3>
+                <p class="text-sm text-muted-foreground">By Neil Gaiman</p>
+                <div class="mt-2 flex items-center text-sm">
+                  <div class="flex items-center">
+                    <i class="fas fa-chart-line mr-1 text-primary"></i>
+                    <span>4.7</span>
+                  </div>
+                  <div class="ml-4 flex items-center">
+                    <i class="fas fa-bookmark mr-1 text-primary"></i>
+                    <span>1.8k</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+            
+            <!-- Novel Card 3 -->
+            <a href="#" class="novel-card group relative overflow-hidden rounded-lg shadow-lg">
+              <div class="aspect-[2/3] w-full bg-muted">
+                <div class="flex h-full items-center justify-center bg-gradient">
+                  <i class="fas fa-book-open text-4xl text-primary opacity-40"></i>
+                </div>
+              </div>
+              <div class="absolute bottom-0 w-full bg-background bg-opacity-90 p-4">
+                <h3 class="font-semibold text-lg">Quantum Paradox</h3>
+                <p class="text-sm text-muted-foreground">By Andy Weir</p>
+                <div class="mt-2 flex items-center text-sm">
+                  <div class="flex items-center">
+                    <i class="fas fa-chart-line mr-1 text-primary"></i>
+                    <span>4.9</span>
+                  </div>
+                  <div class="ml-4 flex items-center">
+                    <i class="fas fa-bookmark mr-1 text-primary"></i>
+                    <span>3.1k</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Browse by Genre Section -->
+      <section class="w-full py-12 md:py-24 lg:py-32 bg-muted">
+        <div class="container mx-auto px-4 md:px-6">
+          <div class="flex flex-col items-center justify-center space-y-4 text-center">
+            <div class="space-y-2">
+              <h2 class="text-3xl font-bold tracking-tighter md:text-4xl">Browse by Genre</h2>
+              <p class="max-w-[900px] text-muted-foreground md:text-xl">
+                Find your next favorite read in our extensive collection
+              </p>
+            </div>
+          </div>
+          
+          <!-- Tabs -->
+          <div class="mt-8 w-full max-w-4xl mx-auto">
+            <div class="grid w-full grid-cols-4 md:grid-cols-7 gap-2">
+              <button class="tab active" data-tab="fantasy">Fantasy</button>
+              <button class="tab" data-tab="scifi">Sci-Fi</button>
+              <button class="tab" data-tab="romance">Romance</button>
+              <button class="tab" data-tab="mystery">Mystery</button>
+              <button class="tab hidden md:block" data-tab="thriller">Thriller</button>
+              <button class="tab hidden md:block" data-tab="historical">Historical</button>
+              <button class="tab hidden md:block" data-tab="more">More</button>
+            </div>
+            
+            <!-- Tab Content -->
+            <div class="mt-6">
+              <!-- Fantasy Tab -->
+              <div class="tab-content active" id="fantasy-content">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  <!-- Fantasy Book 1 -->
+                  <div class="card overflow-hidden">
+                    <div class="p-0">
+                      <div class="aspect-[2/1] w-full bg-muted">
+                        <div class="flex h-full items-center justify-center bg-gradient">
+                          <i class="fas fa-book-open text-2xl text-primary opacity-40"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="p-4">
+                      <h3 class="font-semibold">The Dragon's Legacy</h3>
+                      <p class="text-sm text-muted-foreground mt-1">By Sarah J. Maas</p>
+                    </div>
+                    <div class="p-4 pt-0 flex justify-between">
+                      <div class="flex items-center text-sm">
+                        <i class="fas fa-chart-line mr-1 text-primary"></i>
+                        <span>4.7</span>
+                      </div>
+                      <button class="btn-outline text-sm">
+                        <i class="fas fa-bookmark mr-2"></i>
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Fantasy Book 2 -->
+                  <div class="card overflow-hidden">
+                    <div class="p-0">
+                      <div class="aspect-[2/1] w-full bg-muted">
+                        <div class="flex h-full items-center justify-center bg-gradient">
+                          <i class="fas fa-book-open text-2xl text-primary opacity-40"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="p-4">
+                      <h3 class="font-semibold">Crown of Midnight</h3>
+                      <p class="text-sm text-muted-foreground mt-1">By Sarah J. Maas</p>
+                    </div>
+                    <div class="p-4 pt-0 flex justify-between">
+                      <div class="flex items-center text-sm">
+                        <i class="fas fa-chart-line mr-1 text-primary"></i>
+                        <span>4.6</span>
+                      </div>
+                      <button class="btn-outline text-sm">
+                        <i class="fas fa-bookmark mr-2"></i>
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Fantasy Book 3 -->
+                  <div class="card overflow-hidden">
+                    <div class="p-0">
+                      <div class="aspect-[2/1] w-full bg-muted">
+                        <div class="flex h-full items-center justify-center bg-gradient">
+                          <i class="fas fa-book-open text-2xl text-primary opacity-40"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="p-4">
+                      <h3 class="font-semibold">The Name of the Wind</h3>
+                      <p class="text-sm text-muted-foreground mt-1">By Patrick Rothfuss</p>
+                    </div>
+                    <div class="p-4 pt-0 flex justify-between">
+                      <div class="flex items-center text-sm">
+                        <i class="fas fa-chart-line mr-1 text-primary"></i>
+                        <span>4.9</span>
+                      </div>
+                      <button class="btn-outline text-sm">
+                        <i class="fas fa-bookmark mr-2"></i>
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Sci-Fi Tab (Hidden by default) -->
+              <div class="tab-content" id="scifi-content">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  <!-- Sci-Fi Book 1 -->
+                  <div class="card overflow-hidden">
+                    <div class="p-0">
+                      <div class="aspect-[2/1] w-full bg-muted">
+                        <div class="flex h-full items-center justify-center bg-gradient">
+                          <i class="fas fa-book-open text-2xl text-primary opacity-40"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="p-4">
+                      <h3 class="font-semibold">Quantum Paradox</h3>
+                      <p class="text-sm text-muted-foreground mt-1">By Andy Weir</p>
+                    </div>
+                    <div class="p-4 pt-0 flex justify-between">
+                      <div class="flex items-center text-sm">
+                        <i class="fas fa-chart-line mr-1 text-primary"></i>
+                        <span>4.9</span>
+                      </div>
+                      <button class="btn-outline text-sm">
+                        <i class="fas fa-bookmark mr-2"></i>
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Sci-Fi Book 2 -->
+                  <div class="card overflow-hidden">
+                    <div class="p-0">
+                      <div class="aspect-[2/1] w-full bg-muted">
+                        <div class="flex h-full items-center justify-center bg-gradient">
+                          <i class="fas fa-book-open text-2xl text-primary opacity-40"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="p-4">
+                      <h3 class="font-semibold">The Martian</h3>
+                      <p class="text-sm text-muted-foreground mt-1">By Andy Weir</p>
+                    </div>
+                    <div class="p-4 pt-0 flex justify-between">
+                      <div class="flex items-center text-sm">
+                        <i class="fas fa-chart-line mr-1 text-primary"></i>
+                        <span>4.8</span>
+                      </div>
+                      <button class="btn-outline text-sm">
+                        <i class="fas fa-bookmark mr-2"></i>
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Sci-Fi Book 3 -->
+                  <div class="card overflow-hidden">
+                    <div class="p-0">
+                      <div class="aspect-[2/1] w-full bg-muted">
+                        <div class="flex h-full items-center justify-center bg-gradient">
+                          <i class="fas fa-book-open text-2xl text-primary opacity-40"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="p-4">
+                      <h3 class="font-semibold">Dune</h3>
+                      <p class="text-sm text-muted-foreground mt-1">By Frank Herbert</p>
+                    </div>
+                    <div class="p-4 pt-0 flex justify-between">
+                      <div class="flex items-center text-sm">
+                        <i class="fas fa-chart-line mr-1 text-primary"></i>
+                        <span>4.7</span>
+                      </div>
+                      <button class="btn-outline text-sm">
+                        <i class="fas fa-bookmark mr-2"></i>
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Other tab contents would be similar but are hidden by default -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section class="w-full py-12 md:py-24 lg:py-32">
+        <div class="container mx-auto px-4 md:px-6">
+          <div class="grid gap-10 px-10 md:gap-16 lg:grid-cols-2">
+            <div class="space-y-4">
+              <div class="inline-block rounded-lg bg-primary px-3 py-1 text-sm text-primary-foreground">
+                Features
+              </div>
+              <h2 class="text-3xl font-bold tracking-tighter md:text-4xl">
+                Designed for the Modern Reader
+              </h2>
+              <p class="max-w-[600px] text-muted-foreground md:text-xl">
+                NovelNest offers a seamless reading experience with features that enhance your journey through every story.
+              </p>
+            </div>
+            <div class="grid gap-6 lg:grid-cols-2">
+              <!-- Feature 1 -->
+              <div class="card">
+                <div class="p-6">
+                  <i class="fas fa-bookmark text-3xl text-primary mb-4"></i>
+                  <h3 class="text-xl font-semibold mb-2">Smart Bookmarks</h3>
+                  <p class="text-muted-foreground">
+                    Never lose your place again. Our smart bookmarks remember exactly where you left off.
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Feature 2 -->
+              <div class="card">
+                <div class="p-6">
+                  <i class="fas fa-book text-3xl text-primary mb-4"></i>
+                  <h3 class="text-xl font-semibold mb-2">Personal Library</h3>
+                  <p class="text-muted-foreground">
+                    Organize your collection with custom shelves and categories that fit your reading style.
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Feature 3 -->
+              <div class="card">
+                <div class="p-6">
+                  <i class="fas fa-sun text-3xl text-primary mb-4"></i>
+                  <h3 class="text-xl font-semibold mb-2">Light & Dark Modes</h3>
+                  <p class="text-muted-foreground">
+                    Read comfortably day or night with customizable themes that are easy on your eyes.
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Feature 4 -->
+              <div class="card">
+                <div class="p-6">
+                  <i class="fas fa-chart-line text-3xl text-primary mb-4"></i>
+                  <h3 class="text-xl font-semibold mb-2">Community Insights</h3>
+                  <p class="text-muted-foreground">
+                    Discover what others think with ratings and reviews from our passionate community.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA Section -->
+      <section class="w-full py-12 md:py-24 lg:py-32 bg-muted">
+        <div class="container mx-auto grid items-center justify-center gap-4 px-4 text-center md:px-6">
+            <div class="space-y-3">
+              <h2 class="text-3xl font-bold tracking-tighter md:text-4xl">
+                Join Our Reading Community
+              </h2>
+              <p class="mx-auto max-w-[600px] text-muted-foreground md:text-xl">
+                Sign up today and get access to thousands of novels, personalized recommendations, and more.
+              </p>
+            </div>
+            <div class="mx-auto w-full max-w-sm space-y-2">
+              <form class="flex flex-col gap-2 sm:flex-row">
+                <input type="email" placeholder="Enter your email" class="w-full px-3 py-2 rounded-md border border-color" />
+                <button type="submit" class="btn-primary">Get Started</button>
+              </form>
+              <p class="text-xs text-muted-foreground">
+                By signing up, you agree to our
+                <a href="#" class="underline underline-offset-2">
+                  Terms & Conditions
+                </a>
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer -->
+      <footer class="w-full border-t border-color py-6">
+        <div class="container mx-auto px-4 flex flex-col items-center justify-between gap-4 md:flex-row md:gap-0">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-book-open"></i>
+            <p class="text-center text-sm leading-loose md:text-left">
+              &copy; <span id="current-year"></span> NovelNest. All rights reserved.
+            </p>
+          </div>
+          <nav class="flex gap-4 sm:gap-6">
+            <a href="#" class="text-sm font-medium hover:underline underline-offset-4">
+              Terms
+            </a>
+            <a href="#" class="text-sm font-medium hover:underline underline-offset-4">
+              Privacy
+            </a>
+            <a href="#" class="text-sm font-medium hover:underline underline-offset-4">
+              Contact
+            </a>
+          </nav>
+        </div>
+      </footer>
+    </div>
+
+    <!-- JavaScript for theme toggle and tabs -->
+    <script>
+      // Set current year in footer
+      document.getElementById('current-year').textContent = new Date().getFullYear();
+      
+      // Theme toggle functionality
+      const themeToggle = document.getElementById('theme-toggle');
+      
+      // Check for saved theme preference or use system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const savedTheme = localStorage.getItem('theme');
+      
+      // Apply the right theme on initial load
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      
+      // Toggle theme when button is clicked
+      themeToggle.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      });
+      
+      // Tab functionality
+      const tabs = document.querySelectorAll('.tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          // Remove active class from all tabs
+          tabs.forEach(t => t.classList.remove('active'));
+          
+          // Add active class to clicked tab
+          tab.classList.add('active');
+          
+          // Hide all tab content
+          const tabContents = document.querySelectorAll('.tab-content');
+          tabContents.forEach(content => {
+            content.classList.remove('active');
+          });
+          
+          // Show the corresponding tab content
+          const tabId = tab.getAttribute('data-tab');
+          const activeContent = document.getElementById(`${tabId}-content`);
+          if (activeContent) {
+            activeContent.classList.add('active');
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
+
